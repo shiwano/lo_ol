@@ -1,0 +1,20 @@
+#!/bin/bash
+# lo_ol
+
+export HUBOT_IRC_SERVER="<your server>"
+export HUBOT_IRC_PORT=6767
+export HUBOT_IRC_ROOMS="#debug"
+export HUBOT_IRC_USERNAME="lool"
+export HUBOT_IRC_NICK="lo_ol"
+export HUBOT_IRC_REALNAME="shiwano"
+export HUBOT_IRC_PASSWORD="<password>"
+export HUBOT_IRC_UNFLOOD="true"
+export HUBOT_IRC_SERVER_FAKE_SSL="true"
+export HUBOT_IRC_USESSL="true"
+export HUBOT_IRC_SEND_NOTICE_MODE="true"
+
+export HUBOT_LOG_LEVEL="debug"  # This helps to see what Hubot is doing
+export HUBOT_IRC_DEBUG="true"
+
+# Finally run:
+./bin/hubot -a irc
