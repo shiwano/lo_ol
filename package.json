@@ -20,7 +20,7 @@
     "url": "https://github.com/github/hubot.git"
   },
   "dependencies": {
-    "hubot": ">= 2.5.0",
+    "hubot": "git://github.com/shiwano/hubot.git#fix-respond-method",
     "hubot-scripts": ">= 2.4.2",
     "hubot-irc": "~0.1.12"
   },
