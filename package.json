@@ -22,7 +22,8 @@
   "dependencies": {
     "hubot": "git://github.com/shiwano/hubot.git#fix-respond-method",
     "hubot-scripts": ">= 2.4.2",
-    "hubot-irc": "~0.1.12"
+    "hubot-irc": "~0.1.12",
+    "lodash": "~1.2.0"
   },
   "engines": {
     "node": ">= 0.8.x",

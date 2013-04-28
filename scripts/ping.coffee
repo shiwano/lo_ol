@@ -1,11 +1,8 @@
-# Description:
-#   Utility commands surrounding Hubot uptime.
-#
 # Commands:
-#   hubot ping - Reply with pong
-#   hubot echo <text> - Reply back with <text>
-#   hubot time - Reply with current time
-#   hubot die - End hubot process
+#   hubot ping - pong
+#   hubot echo <text> - <text> をそのまま返す
+#   hubot time - 現在の時刻を返す
+#   hubot die - Bot のプロセスを終了させる
 
 module.exports = (robot) ->
   robot.respond /PING$/i, (msg) ->
@@ -15,7 +12,7 @@ module.exports = (robot) ->
     msg.send msg.match[1]
 
   robot.respond /TIME$/i, (msg) ->
-    msg.send "Server time is: #{new Date()}"
+    msg.send "つ #{new Date()}"
 
   robot.respond /DIE$/i, (msg) ->
     msg.send "Goodbye, cruel world."

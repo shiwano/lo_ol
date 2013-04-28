@@ -1,20 +1,17 @@
-# Description:
-#   A way to interact with the Google Images API.
-#
 # Commands:
-#   hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
-#   hubot animate me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
-#   hubot mustache me <url> - Adds a mustache to the specified URL.
-#   hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
+#   hubot image <query> - <query> にマッチした画像を返す
+#   hubot animate <query> - <query> にマッチしたアニメーション GIF 画像を返す
+#   hubot mustache <url> - <url> にひげをつけた画像を返す
+#   hubot mustache <query> - <query> にマッチした画像にひげをつけて返す
 
 module.exports = (robot) ->
   robot.respond /(image|img)( me)? (.*)/i, (msg) ->
     imageMe msg, msg.match[3], (url) ->
-      msg.send url
+      msg.send 'つ' + url
 
   robot.respond /animate( me)? (.*)/i, (msg) ->
     imageMe msg, msg.match[2], true, (url) ->
-      msg.send url
+      msg.send 'つ' + url
 
   robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
     type = Math.floor(Math.random() * 3)
@@ -22,10 +19,10 @@ module.exports = (robot) ->
     imagery = msg.match[1]
 
     if imagery.match /^https?:\/\//i
-      msg.send "#{mustachify}#{imagery}"
+      msg.send "つ #{mustachify}#{imagery}"
     else
       imageMe msg, imagery, false, true, (url) ->
-        msg.send "#{mustachify}#{url}"
+        msg.send "つ #{mustachify}#{url}"
 
 imageMe = (msg, query, animated, faces, cb) ->
   cb = animated if typeof animated == 'function'
@@ -40,5 +37,4 @@ imageMe = (msg, query, animated, faces, cb) ->
       images = images.responseData?.results
       if images?.length > 0
         image  = msg.random images
-        cb "#{image.unescapedUrl}#.png"
-
+        cb "つ #{image.unescapedUrl}#.png"

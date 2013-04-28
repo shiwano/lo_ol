@@ -1,9 +1,6 @@
-# Description:
-#   Allows Hubot to know many languages.
-#
 # Commands:
-#   hubot translate me <phrase> - Searches for a translation for the <phrase> and then prints that bad boy out.
-#   hubot translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional
+#   hubot translate <phrase> - <phrase> の翻訳結果を返す
+#   hubot translate from <source> into <target> <phrase> - <phrase> を <source> から <target> の言語へ翻訳した結果を返す。<source> と <target> はオプション
 
 languages =
   "af": "Afrikaans",
@@ -80,7 +77,7 @@ module.exports = (robot) ->
     term   = "\"#{msg.match[3]}\""
     origin = if msg.match[1] isnt undefined then getCode(msg.match[1], languages) else 'auto'
     target = if msg.match[2] isnt undefined then getCode(msg.match[2], languages) else 'en'
-    
+
     msg.http("https://translate.google.com/translate_a/t")
       .query({
         client: 't'
@@ -91,7 +88,7 @@ module.exports = (robot) ->
         ssel: 0
         tl: target
         tsel: 0
-        uptl: "en"
+        uptl: "ja"
         text: term
       })
       .header('User-Agent', 'Mozilla/5.0')
@@ -103,7 +100,7 @@ module.exports = (robot) ->
           parsed = parsed[0] and parsed[0][0] and parsed[0][0][0]
           if parsed
             if msg.match[2] is undefined
-              msg.send "#{term} is #{language} for #{parsed}"
+              msg.send "#{term} は #{language} だと #{parsed} だよ！"
             else
-              msg.send "The #{language} #{term} translates as #{parsed} in #{languages[target]}"
+              msg.send "#{language} の #{term} は、 #{languages[target]} の #{parsed} だよ！"
 

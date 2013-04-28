@@ -1,11 +1,5 @@
-# Description:
-#   Event system related utilities
-#
 # Commands:
-#   hubot fake event <event> - Triggers the <event> event for debugging reasons
-#
-# Events:
-#   debug - {user: <user object to send message to>}
+#   hubot fake event <event> - デバッグ用に <event> イベントを発行
 
 util = require 'util'
 

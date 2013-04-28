@@ -1,12 +1,8 @@
-# Description:
-#   Interacts with the Google Maps API.
-#
 # Commands:
-#   hubot map me <query> - Returns a map view of the area returned by `query`.
+#   hubot map <query> - <query> にマッチした Google Map の検索結果を返す
 
 module.exports = (robot) ->
-
-  robot.respond /(?:(satellite|terrain|hybrid)[- ])?map me (.+)/i, (msg) ->
+  robot.respond /map (.+)/i, (msg) ->
     mapType  = msg.match[1] or "roadmap"
     location = msg.match[2]
     mapUrl   = "http://maps.google.com/maps/api/staticmap?markers=" +
@@ -21,6 +17,6 @@ module.exports = (robot) ->
               escape(location) +
               "&t=m&z=11"
 
-    msg.send mapUrl
-    msg.send url
+    msg.send 'つ ' + mapUrl
+    msg.send 'つ ' + url
 

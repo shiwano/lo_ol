@@ -1,9 +1,9 @@
-# Description: 
+# Description:
 #   Generates help commands for Hubot.
 #
 # Commands:
-#   hubot help - Displays all of the help commands that Hubot knows about.
-#   hubot help <query> - Displays all help commands that match <query>.
+#   hubot help - 使用できるコマンドの一覧を表示
+#   hubot help <query> - <query> にマッチしたコマンドのヘルプを表示
 #
 # URLS:
 #   /hubot/help
@@ -11,6 +11,7 @@
 # Notes:
 #   These commands are grabbed from comment blocks at the top of each file.
 
+_ = require 'lodash'
 helpContents = (name, commands) ->
 
   """
@@ -59,16 +60,20 @@ module.exports = (robot) ->
         cmd.match new RegExp(msg.match[1], 'i')
 
       if cmds.length == 0
-        msg.send "No available commands match #{msg.match[1]}"
+        msg.send "#{msg.match[1]} なんてコマンドないよ！"
         return
-    emit = cmds.join "\n"
+    else
+      cmds = cmds.map (cmd) -> cmd.split(' ')[1]
+      cmds = _.uniq cmds, true
+
+    emit = cmds.join " | "
 
     unless robot.name.toLowerCase() is 'hubot'
       emit = emit.replace /hubot/ig, robot.name
 
     msg.send emit
 
-  robot.router.get "/#{robot.name}/help", (req, res) ->
+  robot.router.get "/help", (req, res) ->
     cmds = robot.helpCommands().map (cmd) ->
       cmd.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 
