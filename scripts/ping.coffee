@@ -12,7 +12,7 @@ module.exports = (robot) ->
     msg.send msg.match[1]
 
   robot.respond /TIME$/i, (msg) ->
-    msg.send "つ #{new Date()}"
+    msg.send new Date()
 
   robot.respond /DIE$/i, (msg) ->
     msg.send "Goodbye, cruel world."

@@ -100,7 +100,6 @@ module.exports = (robot) ->
           parsed = parsed[0] and parsed[0][0] and parsed[0][0][0]
           if parsed
             if msg.match[2] is undefined
-              msg.send "#{term} は #{language} だと #{parsed} だよ！"
+              msg.send "#{term} は #{language} だと #{parsed}"
             else
-              msg.send "#{language} の #{term} は、 #{languages[target]} の #{parsed} だよ！"
-
+              msg.send "#{language} の #{term} は、 #{languages[target]} だと #{parsed}"

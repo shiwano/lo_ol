@@ -17,6 +17,5 @@ module.exports = (robot) ->
               escape(location) +
               "&t=m&z=11"
 
-    msg.send 'つ ' + mapUrl
-    msg.send 'つ ' + url
-
+    msg.send mapUrl
+    msg.send url

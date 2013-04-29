@@ -60,7 +60,7 @@ module.exports = (robot) ->
         cmd.match new RegExp(msg.match[1], 'i')
 
       if cmds.length == 0
-        msg.send "#{msg.match[1]} なんてコマンドないよ！"
+        msg.send "#{msg.match[1]} というコマンドはない"
         return
     else
       cmds = cmds.map (cmd) -> cmd.split(' ')[1]
