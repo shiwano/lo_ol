@@ -24,7 +24,8 @@
     "hubot-scripts": ">= 2.4.2",
     "hubot-irc": "~0.1.12",
     "lodash": "~1.2.0",
-    "cron": "~1.0.1"
+    "cron": "~1.0.1",
+    "time": "~0.9.2"
   },
   "engines": {
     "node": ">= 0.8.x",
