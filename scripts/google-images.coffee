@@ -7,11 +7,11 @@
 module.exports = (robot) ->
   robot.respond /(image|img)( me)? (.*)/i, (msg) ->
     imageMe msg, msg.match[3], (url) ->
-      msg.send 'つ' + url
+      msg.send 'つ ' + url
 
   robot.respond /animate( me)? (.*)/i, (msg) ->
     imageMe msg, msg.match[2], true, (url) ->
-      msg.send 'つ' + url
+      msg.send 'つ ' + url
 
   robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
     type = Math.floor(Math.random() * 3)
@@ -37,4 +37,4 @@ imageMe = (msg, query, animated, faces, cb) ->
       images = images.responseData?.results
       if images?.length > 0
         image  = msg.random images
-        cb "つ #{image.unescapedUrl}#.png"
+        cb "#{image.unescapedUrl}#.png"
