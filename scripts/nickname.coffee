@@ -13,7 +13,7 @@ module.exports = (robot) ->
     for eye in eyes
       for mouth in mouths
         faces.push "[#{eye}#{mouth}#{eye}]"
-    faces
+    _.without faces, '[ooo]'
 
   chooseByRandom = (array) ->
     array[_.random(0, array.length - 1)]
