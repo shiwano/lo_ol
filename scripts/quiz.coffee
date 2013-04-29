@@ -48,8 +48,8 @@ module.exports = (robot) ->
 
   robot.respond /quiz\s*(.*)?$/i, (msg) ->
     q = msg.match[1]
-    if q
-      url = "http://api.quizken.jp/api/quiz-search/api_key/ma7/phrase/#{q}/count/50"
+    if q?
+      url = "http://api.quizken.jp/api/quiz-search/api_key/ma7/phrase/#{encodeURIComponent q}/count/50"
     else
       url = 'http://api.quizken.jp/api/quiz-index/api_key/ma7/count/1'
     setQuiz msg, url
