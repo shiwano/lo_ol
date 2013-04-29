@@ -8,7 +8,7 @@ class Question
   rightAnswer: -> "答えは #{@rightAnswerIndex}:「#{@data.answers[0]}」 でした"
   isYesNo:     -> @data.answers[0] in ['×', '○']
 
-  constructor: (@data) ->
+  constructor: (@data, @room) ->
     @answers = {}
     @_answerList = if @isYesNo() then ['○', '×'] else _.shuffle(@data.answers)
     @rightAnswerIndex = _.indexOf(@_answerList, @data.answers[0]) + 1
@@ -29,7 +29,7 @@ module.exports = (robot) ->
   currentQuestion = null
 
   robot.hear /[1-4]$/, (msg) ->
-    return unless currentQuestion?
+    return unless currentQuestion?.room is msg.message.room
     currentQuestion.answers[msg.message.user.name] = Number msg.message.text
 
   setQuiz = (msg, url) ->
@@ -37,12 +37,13 @@ module.exports = (robot) ->
 
     robot.http(url).get() (err, res, body) ->
       result = msg.random JSON.parse(body)
-      currentQuestion = new Question(result)
+      currentQuestion = new Question(result, msg.message.room)
       msg.send currentQuestion.question()
       msg.send currentQuestion.answerList()
       setTimeout ->
-        msg.send currentQuestion.rightAnswer()
-        msg.send currentQuestion.solvers()
+        # IRC だと、別の channel に誤爆することがあったので messageRoom を使用
+        robot.messageRoom currentQuestion.room, currentQuestion.rightAnswer()
+        robot.messageRoom currentQuestion.room, currentQuestion.solvers()
         currentQuestion = null
       , 60000
 
