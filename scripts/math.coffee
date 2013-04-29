@@ -15,4 +15,4 @@ module.exports = (robot) ->
       .get() (err, res, body) ->
         # Response includes non-string keys, so we can't use JSON.parse here.
         json = eval("(#{body})")
-        msg.send json.rhs || '計算できなかった'
+        msg.send json.rhs || '計算できませんでした'

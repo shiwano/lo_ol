@@ -13,4 +13,4 @@ module.exports = (robot) ->
           tweet  = msg.random tweets.results
           msg.send "http://twitter.com/#!/#{tweet.from_user}/status/#{tweet.id_str}"
         else
-          msg.reply "ツイートが見つからなかった"
+          msg.reply "ツイートが見つかりませんでした"
