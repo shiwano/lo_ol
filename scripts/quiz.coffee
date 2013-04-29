@@ -32,17 +32,24 @@ module.exports = (robot) ->
     return unless currentQuestion?
     currentQuestion.answers[msg.message.user.name] = Number msg.message.text
 
-  robot.respond /quiz$/i, (msg) ->
+  setQuiz = (msg, url) ->
     return msg.send '解答中なので出題できません' if currentQuestion?
 
-    robot.http('http://api.quizken.jp/api/quiz-index/api_key/ma7/count/1')
-      .get() (err, res, body) ->
-        result = msg.random JSON.parse(body)
-        currentQuestion = new Question(result)
-        msg.send currentQuestion.question()
-        msg.send currentQuestion.answerList()
-        setTimeout ->
-          msg.send currentQuestion.rightAnswer()
-          msg.send currentQuestion.solvers()
-          currentQuestion = null
-        , 60000
+    robot.http(url).get() (err, res, body) ->
+      result = msg.random JSON.parse(body)
+      currentQuestion = new Question(result)
+      msg.send currentQuestion.question()
+      msg.send currentQuestion.answerList()
+      setTimeout ->
+        msg.send currentQuestion.rightAnswer()
+        msg.send currentQuestion.solvers()
+        currentQuestion = null
+      , 60000
+
+  robot.respond /quiz\s*(.*)?$/i, (msg) ->
+    q = msg.match[1]
+    if q
+      url = "http://api.quizken.jp/api/quiz-search/api_key/ma7/phrase/#{q}/count/50"
+    else
+      url = 'http://api.quizken.jp/api/quiz-index/api_key/ma7/count/1'
+    setQuiz msg, url
