@@ -4,14 +4,14 @@
 _ = require 'lodash'
 
 class Question
-  constructor: (@data, @room) ->
+  constructor: (@data, @room, @time) ->
     @answers = {}
     @_answerList = if @isYesNo() then ['○', '×'] else _.shuffle(@data.answers)
     @rightAnswerIndex = _.indexOf(@_answerList, @data.answers[0]) + 1
 
-  question:    -> "問題 - #{@data.question}"
-  rightAnswer: -> "答えは #{@rightAnswerIndex}:「#{@data.answers[0]}」 でした"
+  question:    -> "問題 - #{@data.question} (制限時間#{@time}秒)"
   answerList:  -> @_answerList.map((a, i) -> "#{i + 1}:「#{a}」").join(' ')
+  rightAnswer: -> "答えは #{@rightAnswerIndex}:「#{@data.answers[0]}」 でした"
   isYesNo:     -> @data.answers[0] in ['×', '○']
 
   solvers: ->
@@ -38,7 +38,7 @@ module.exports = (robot) ->
       return msg.send '問題が見つかりませんでした' if result.length is 0
 
       quizData = msg.random result
-      currentQuestion = new Question(quizData, msg.message.room)
+      currentQuestion = new Question(quizData, msg.message.room, time)
       msg.send currentQuestion.question()
       msg.send currentQuestion.answerList()
       setTimeout ->
@@ -48,7 +48,7 @@ module.exports = (robot) ->
         currentQuestion = null
       , time * 1000
 
-  robot.respond /quiz(\d*)\s+(.*)?$/i, (msg) ->
+  robot.respond /quiz(\d*)\s*(.*)?$/i, (msg) ->
     time = Number(msg.match[1]) or 60
     time = 60 if time > 60
     q = msg.match[2]
