@@ -1,5 +1,5 @@
 # Commands:
-#   hubot quiz <query> - クイズを出題する
+#   hubot quiz<time> <query> - クイズを出題する
 
 _ = require 'lodash'
 
@@ -32,7 +32,7 @@ module.exports = (robot) ->
     return unless currentQuestion?.room is msg.message.room
     currentQuestion.answers[msg.message.user.name] = Number msg.message.text
 
-  setQuiz = (msg, url) ->
+  setQuiz = (msg, url, time) ->
     return msg.send '解答中なので出題できません' if currentQuestion?
 
     robot.http(url).get() (err, res, body) ->
@@ -48,12 +48,13 @@ module.exports = (robot) ->
         robot.messageRoom currentQuestion.room, currentQuestion.rightAnswer()
         robot.messageRoom currentQuestion.room, currentQuestion.solvers()
         currentQuestion = null
-      , 60000
+      , time * 1000
 
-  robot.respond /quiz\s*(.*)?$/i, (msg) ->
-    q = msg.match[1]
+  robot.respond /quiz(\d*)\s+(.*)?$/i, (msg) ->
+    time = Number(msg.match[1]) or 60
+    q = msg.match[2]
     if q?
       url = "http://api.quizken.jp/api/quiz-search/api_key/ma7/phrase/#{encodeURIComponent q}/count/50"
     else
       url = 'http://api.quizken.jp/api/quiz-index/api_key/ma7/count/1'
-    setQuiz msg, url
+    setQuiz msg, url, time
