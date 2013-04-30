@@ -36,8 +36,11 @@ module.exports = (robot) ->
     return msg.send '解答中なので出題できません' if currentQuestion?
 
     robot.http(url).get() (err, res, body) ->
-      result = msg.random JSON.parse(body)
-      currentQuestion = new Question(result, msg.message.room)
+      result = JSON.parse body
+      return msg.send '問題が見つかりませんでした' if result.length is 0
+
+      quizData = msg.random result
+      currentQuestion = new Question(quizData, msg.message.room)
       msg.send currentQuestion.question()
       msg.send currentQuestion.answerList()
       setTimeout ->
