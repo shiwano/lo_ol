@@ -4,17 +4,15 @@
 _ = require 'lodash'
 
 class Question
-  question:    -> "問題 - #{@data.question}"
-  rightAnswer: -> "答えは #{@rightAnswerIndex}:「#{@data.answers[0]}」 でした"
-  isYesNo:     -> @data.answers[0] in ['×', '○']
-
   constructor: (@data, @room) ->
     @answers = {}
     @_answerList = if @isYesNo() then ['○', '×'] else _.shuffle(@data.answers)
     @rightAnswerIndex = _.indexOf(@_answerList, @data.answers[0]) + 1
 
-  answerList: ->
-    @_answerList.map((a, i) -> "#{i + 1}:「#{a}」").join(' ')
+  question:    -> "問題 - #{@data.question}"
+  rightAnswer: -> "答えは #{@rightAnswerIndex}:「#{@data.answers[0]}」 でした"
+  answerList:  -> @_answerList.map((a, i) -> "#{i + 1}:「#{a}」").join(' ')
+  isYesNo:     -> @data.answers[0] in ['×', '○']
 
   solvers: ->
     solvers = []
@@ -52,6 +50,7 @@ module.exports = (robot) ->
 
   robot.respond /quiz(\d*)\s+(.*)?$/i, (msg) ->
     time = Number(msg.match[1]) or 60
+    time = 60 if time > 60
     q = msg.match[2]
     if q?
       url = "http://api.quizken.jp/api/quiz-search/api_key/ma7/phrase/#{encodeURIComponent q}/count/50"
