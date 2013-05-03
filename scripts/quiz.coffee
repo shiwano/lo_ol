@@ -26,9 +26,10 @@ class Question
 module.exports = (robot) ->
   currentQuestion = null
 
-  robot.hear /[1-4]$/, (msg) ->
+  robot.hear /^\s*[1-4]\s*$/, (msg) ->
     return unless currentQuestion?.room is msg.message.room
-    currentQuestion.answers[msg.message.user.name] = Number msg.message.text
+    answer = Number msg.message.text.trim()
+    currentQuestion.answers[msg.message.user.name] = answer
 
   setQuiz = (msg, url, time) ->
     return msg.send '解答中なので出題できません' if currentQuestion?
