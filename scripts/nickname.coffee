@@ -7,14 +7,18 @@ _ = require 'lodash'
 
 module.exports = (robot) ->
   faces = do ->
-    mouths = ['o', 'x', 'q', 'w', '_', 'A', 'v', 'r', 'm', 'c']
-    eyes = ['^', 'o', 'T', '-']
+    mouths = ['o', 'x', 'q', 'w', '_', 'A', 'v', 'r', 'm', 'c', 'L']
+    eyes = ['^', 'O', 'T', '-', '`', 'oO', '^-']
     faces = []
     for eye in eyes
       for mouth in mouths
-        faces.push "[#{eye}#{mouth}#{eye}]"
-    faces.push '[o_0]'
-    _.without faces, '[ooo]'
+        if eye.length is 2
+          faces.push "[#{eye[0]}#{mouth}#{eye[1]}]"
+        else
+          faces.push "[#{eye}#{mouth}#{eye}]"
+    faces
+
+  hands = ['9m', 'v', 'o']
 
   chooseByRandom = (array) ->
     array[_.random(0, array.length - 1)]
@@ -29,8 +33,14 @@ module.exports = (robot) ->
     re = re.join('/').replace quoteRegExp(oldStr), quoteRegExp(newStr)
     new RegExp(re, modifiers)
 
-  changeNickname = ->
+  getNickname = ->
     nickname = chooseByRandom faces
+    if _.random(0, 2) is 0
+      nickname += chooseByRandom hands
+    nickname
+
+  updateNickname = ->
+    nickname = getNickname()
     textListeners = robot.listeners.filter (l) -> l instanceof TextListener
     robot.listeners = _.difference robot.listeners, textListeners
 
@@ -42,5 +52,5 @@ module.exports = (robot) ->
     robot.adapter.command 'NICK', nickname
     robot.name = nickname
 
-  robot.respond /nick/i, changeNickname
-  job = new CronJob('00 00 10,13,16,19 * * 1-5', changeNickname, null, true, 'Asia/Tokyo')
+  robot.respond /nick/i, updateNickname
+  new CronJob('00 00 10,13,16,19 * * 1-5', updateNickname, null, true, 'Asia/Tokyo')
