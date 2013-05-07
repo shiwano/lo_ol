@@ -1,13 +1,13 @@
 #!/bin/bash
-# lo_Ol
+# lo_ol
 
 npm install
 
 export HUBOT_IRC_SERVER="<your server>"
 export HUBOT_IRC_PORT=6767
 export HUBOT_IRC_ROOMS="#debug"
-export HUBOT_IRC_USERNAME="loOl"
-export HUBOT_IRC_NICK="[o_O]"
+export HUBOT_IRC_USERNAME="lool"
+export HUBOT_IRC_NICK="[o_o]"
 export HUBOT_IRC_REALNAME="<your realname>"
 export HUBOT_IRC_PASSWORD="<password>"
 export HUBOT_IRC_UNFLOOD="true"
