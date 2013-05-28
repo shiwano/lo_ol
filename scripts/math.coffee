@@ -6,7 +6,7 @@ module.exports = (robot) ->
     msg
       .http('https://www.google.com/ig/calculator')
       .query
-        hl: 'en'
+        hl: 'ja'
         q: msg.match[1]
       .headers
         'Accept-Language': 'en-us,en;q=0.5',
