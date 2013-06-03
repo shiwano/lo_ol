@@ -4,11 +4,13 @@
 
 module.exports = (robot) ->
   robot.respond /summon\s+(.*)$/i, (msg) ->
-    return unless msg.message.user.name is process.env.HUBOT_IRC_REALNAME
+    admins = process.env.HUBOT_ADMINS.split ','
+    return unless msg.message.user.name in admins
     room = msg.match[1]
     return unless room
     robot.adapter.command 'JOIN', room
 
   robot.respond /dismiss$/i, (msg) ->
-    return unless msg.message.user.name is process.env.HUBOT_IRC_REALNAME
+    admins = process.env.HUBOT_ADMINS.split ','
+    return unless msg.message.user.name in admins
     robot.adapter.command 'PART', msg.message.room

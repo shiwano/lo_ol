@@ -2,6 +2,8 @@
 
 npm install
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
+export HUBOT_REPORT_ROOM="#report"
+export HUBOT_ADMINS="Shell"
 
 exec node_modules/.bin/hubot "$@"
 

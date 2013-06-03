@@ -6,6 +6,7 @@ npm install
 export HUBOT_IRC_SERVER="<your server>"
 export HUBOT_IRC_PORT=6767
 export HUBOT_IRC_ROOMS="#debug"
+export HUBOT_IRC_REPORT_ROOM="#debug"
 export HUBOT_IRC_USERNAME="shiwanobot"
 export HUBOT_IRC_NICK="[o_o]"
 export HUBOT_IRC_REALNAME="<your realname>"
@@ -19,6 +20,9 @@ export HUBOT_LOG_LEVEL="debug"  # This helps to see what Hubot is doing
 export HUBOT_IRC_DEBUG="true"
 export PORT=8080
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
+
+export HUBOT_REPORT_ROOM="#report"
+export HUBOT_ADMINS="<your names>"
 
 # Finally run:
 exec node_modules/.bin/hubot -a irc

@@ -40,15 +40,16 @@ module.exports = (robot) ->
   sum = (array) ->
     _.reduce array, ((memo, num) -> memo + num), 0
 
-  postReport = (msg, record, userName) ->
+  postReport = (room, record, userName) ->
     prefix = if userName? then "#{userName} さんの" else ''
     commentNum = sum record
-    msg.send "#{prefix}本日の総発言数: #{commentNum}"
-    msg.send "#{prefix}本日の1時間あたりの平均発言数: #{Math.floor(commentNum / 24 * 100) / 100}"
-    msg.send "#{prefix}本日の発言数グラフ: [10時] #{sparkline record[20..38]} [19時]"
+    robot.messageRoom room, "#{prefix}本日の総発言数: #{commentNum}"
+    robot.messageRoom room, "#{prefix}本日の1時間あたりの平均発言数: #{Math.floor(commentNum / 24 * 100) / 100}"
+    robot.messageRoom room, "#{prefix}本日の発言数グラフ: [10時] #{sparkline record[20..38]} [19時]"
 
   postTotalReport = (msg) ->
-    postReport msg, rec.getTotalRecord()
+    room = if msg? then msg.message.room else process.env.HUBOT_REPORT_ROOM
+    postReport room, rec.getTotalRecord()
 
   robot.hear /.+/, (msg) ->
     rec.increment msg.message.user.name, 1
@@ -57,7 +58,7 @@ module.exports = (robot) ->
     userName = msg.match[1]
     record = rec.getRecord userName
     if record?
-      postReport msg, record, userName
+      postReport msg.message.room, record, userName
     else
       msg.send "#{userName} さんのデータは見つかりませんでした"
 
