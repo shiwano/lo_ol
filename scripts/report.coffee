@@ -11,6 +11,7 @@ _ = require 'lodash'
 class Recorder
   constructor: ->
     @_records = {}
+    @_rankingRecords = {}
 
   getRecord: (userName) ->
     @_records[userName]
@@ -29,7 +30,15 @@ class Recorder
         generalRecord[index] += value
     generalRecord
 
+  getRanking: ->
+    pairs = _.pairs @_rankingRecords
+    _.sortBy(pairs, (pair) -> pair[1]).reverse()
+
   increment: (userName, value=1) ->
+    unless @_rankingRecords[userName]?
+      @_rankingRecords[userName] = 0
+    @_rankingRecords[userName] += value
+
     record = @getOrCreateRecord userName
     now = moment()
     part = if now.minute() < 30 then 0 else 1
@@ -38,15 +47,21 @@ class Recorder
 module.exports = (robot) ->
   rec = new Recorder()
 
-  sum = (array) ->
-    _.reduce array, ((memo, num) -> memo + num), 0
-
   postReport = (room, record, userName) ->
     prefix = if userName? then "#{userName} さんの" else ''
-    total = sum record
+    total = _.reduce record, ((memo, num) -> memo + num), 0
+    ranking = rec.getRanking()
+
     robot.messageRoom room, "#{prefix}本日の総発言数: #{total}"
     robot.messageRoom room, "#{prefix}本日の1時間あたりの平均発言数: #{Math.floor(total / 24 * 100) / 100}"
     robot.messageRoom room, "#{prefix}本日の発言数グラフ: [10時] #{sparkline record[20...38]} [19時]"
+
+    if userName?
+      pair = _.find ranking, (pair) -> pair[0] is userName
+      robot.messageRoom room, "#{prefix}本日の発言数ランキング: #{ranking.indexOf(pair) + 1}/#{ranking.length}"
+    else
+      rankingStrings = ("[#{i + 1}]#{pair[0]}(#{pair[1]})" for pair, i in ranking[0...5])
+      robot.messageRoom room, "本日の発言数ランキング: #{rankingStrings.join(', ')}"
 
   postGeneralReport = (msg) ->
     room = if msg? then msg.message.room else process.env.HUBOT_REPORT_ROOM
