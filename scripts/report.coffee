@@ -1,6 +1,7 @@
 # Commands:
-#   hubot report - IRC 全体の発言数情報を表示する
-#   hubot report <username> - 指定したユーザの IRC の発言数情報を表示する
+#   hubot general-report - IRC 全体の発言数情報を表示する
+#   hubot report - 発言した ユーザ のIRC 発言数情報を表示する
+#   hubot report <username> - 指定したユーザの IRC 発言数情報を表示する
 
 {CronJob} = require 'cron'
 moment = require 'moment'
@@ -21,14 +22,14 @@ class Recorder
       @_records[userName] = record
     record
 
-  getTotalRecord: ->
-    totalRecord = (0 for i in [0...48])
+  getGeneralRecord: ->
+    generalRecord = (0 for i in [0...48])
     for userName, record of @_records
       for value, index in record
-        totalRecord[index] += value
-    totalRecord
+        generalRecord[index] += value
+    generalRecord
 
-  increment: (userName, value) ->
+  increment: (userName, value=1) ->
     record = @getOrCreateRecord userName
     now = moment()
     part = if now.minute() < 30 then 0 else 1
@@ -42,26 +43,33 @@ module.exports = (robot) ->
 
   postReport = (room, record, userName) ->
     prefix = if userName? then "#{userName} さんの" else ''
-    commentNum = sum record
-    robot.messageRoom room, "#{prefix}本日の総発言数: #{commentNum}"
-    robot.messageRoom room, "#{prefix}本日の1時間あたりの平均発言数: #{Math.floor(commentNum / 24 * 100) / 100}"
-    robot.messageRoom room, "#{prefix}本日の発言数グラフ: [10時] #{sparkline record[20..38]} [19時]"
+    total = sum record
+    robot.messageRoom room, "#{prefix}本日の総発言数: #{total}"
+    robot.messageRoom room, "#{prefix}本日の1時間あたりの平均発言数: #{Math.floor(total / 24 * 100) / 100}"
+    robot.messageRoom room, "#{prefix}本日の発言数グラフ: [10時] #{sparkline record[20...38]} [19時]"
 
-  postTotalReport = (msg) ->
+  postGeneralReport = (msg) ->
     room = if msg? then msg.message.room else process.env.HUBOT_REPORT_ROOM
-    postReport room, rec.getTotalRecord()
+    postReport room, rec.getGeneralRecord()
 
-  robot.hear /.+/, (msg) ->
-    rec.increment msg.message.user.name, 1
-
-  robot.respond /report\s+(.*)/i, (msg) ->
-    userName = msg.match[1]
+  postUserReport = (msg, userName) ->
     record = rec.getRecord userName
     if record?
       postReport msg.message.room, record, userName
     else
       msg.send "#{userName} さんのデータは見つかりませんでした"
 
-  robot.respond /report\s*$/i, postTotalReport
-  new CronJob('00 00 19 * * 1-5', postTotalReport, null, true, 'Asia/Tokyo')
+  robot.hear /.+/, (msg) ->
+    rec.increment msg.message.user.name
+
+  robot.respond /report\s+(.*)/i, (msg) ->
+    postUserReport msg, msg.match[1]
+
+  robot.respond /report\s*$/i, (msg) ->
+    postUserReport msg, msg.message.user.name
+
+  robot.respond /general-report\s*$/i, (msg) ->
+    postGeneralReport msg
+
+  new CronJob('00 00 19 * * 1-5', postGeneralReport, null, true, 'Asia/Tokyo')
   new CronJob('00 00 00 * * 1-5', (-> rec = new Recorder()), null, true, 'Asia/Tokyo')
