@@ -53,7 +53,6 @@ module.exports = (robot) ->
     ranking = rec.getRanking()
 
     robot.messageRoom room, "#{prefix}本日の総発言数: #{total}"
-    robot.messageRoom room, "#{prefix}本日の1時間あたりの平均発言数: #{Math.floor(total / 24 * 100) / 100}"
     robot.messageRoom room, "#{prefix}本日の発言数グラフ: [10時] #{sparkline record[20...38]} [19時]"
 
     if userName?
