@@ -1,5 +1,5 @@
 # Commands:
-#   hubot 2ch watch <bbsname> <query> - <query> にマッチした 2ch スレッドをウォッチする
+#   hubot 2ch watch <bbsname> <query> <interval> - <query> にマッチした 2ch スレッドをウォッチする
 #   hubot 2ch stop - 現在のルームでの 2ch スレッドのウォッチを停止する
 
 {ThreadWatcher, BbsMenu} = require '2ch'
@@ -18,7 +18,7 @@ module.exports = (robot) ->
     watchers[room].destroy()
     delete watchers[room]
 
-  startWatching = (room, bbsName, query) ->
+  startWatching = (room, bbsName, query, interval) ->
     if watchers[room]
       watchers[room].destroy()
 
@@ -26,7 +26,7 @@ module.exports = (robot) ->
     watcher = new ThreadWatcher
       bbsName: bbsName
       query: query
-      interval: 5000
+      interval: interval
       bbsMenu: bbsMenu
     watcher.on 'update', (messages) ->
       return canMessage = true unless canMessage
@@ -45,12 +45,13 @@ module.exports = (robot) ->
     watcher.start()
     watchers[room] = watcher
 
-  robot.respond /2ch\s+watch\s+(.*)\s+(.*)\s*$/i, (msg) ->
+  robot.respond /2ch\s+watch\s+(.*)\s+(.*)\s+([0-9]+)\s*$/i, (msg) ->
     return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
     bbsName = msg.match[1]
     query = new RegExp(msg.match[2])
-    msg.send "#{bbsName} の #{query} にマッチする 2ch スレッドをウォッチします"
-    startWatching msg.room, bbsName, query
+    interval = Number(msg.match[3] or 180000)
+    msg.send "「#{bbsName} 」の「#{query}」にマッチする 2ch スレッドを「#{interval}」の間隔でウォッチします"
+    startWatching msg.room, bbsName, query, interval
 
   robot.respond /2ch\s+stop\s*$/i, (msg) ->
     return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
