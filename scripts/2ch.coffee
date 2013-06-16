@@ -11,8 +11,8 @@ module.exports = (robot) ->
 
   toMessageString = (message) ->
     name = message.name.replace /<[^<>]+>/g, ''
-    date = message.postedAt.format('YYYY/MM/DD HH:mm:ss')
-    body = ent.decode(message.body.replace /<[^<>]+>/g, '')
+    body = message.body.replace /<[^<>]+>/g, ''
+    body = ent.decode(body).replace /([^h]|^)ttp:\/\//, '$1http://'
     "[#{message.number}]#{name}(#{message.tripId}): #{body}"
 
   stopWatching = (room) ->
