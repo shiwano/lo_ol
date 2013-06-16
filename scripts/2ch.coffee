@@ -51,9 +51,9 @@ module.exports = (robot) ->
     query = new RegExp(msg.match[2])
     interval = Number(msg.match[3] or 180000)
     msg.send "「#{bbsName} 」の「#{msg.match[2]}」にマッチする 2ch スレッドを「#{interval}」の間隔で監視します"
-    startWatching msg.room, bbsName, query, interval
+    startWatching msg.message.room, bbsName, query, interval
 
   robot.respond /2ch\s+stop\s*$/i, (msg) ->
     return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
     msg.send '2ch スレッドの監視をストップします'
-    stopWatching msg.room
+    stopWatching msg.message.room
