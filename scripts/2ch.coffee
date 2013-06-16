@@ -10,9 +10,10 @@ module.exports = (robot) ->
   bbsMenu = new BbsMenu()
 
   toMessageString = (message) ->
+    name = message.name.replace /<[^<>]+>/g, ''
     date = message.postedAt.format('YYYY/MM/DD HH:mm:ss')
     body = ent.decode(message.body.replace /<[^<>]+>/g, '')
-    "[#{message.number}]#{message.name}(#{message.tripId}): #{body}"
+    "[#{message.number}]#{name}(#{message.tripId}): #{body}"
 
   stopWatching = (room) ->
     watchers[room].destroy()
