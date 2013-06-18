@@ -22,7 +22,7 @@ export PORT=8080
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
 
 export HUBOT_REPORT_ROOM="#report"
-export HUBOT_2ch_WATCHING="#debug 掲示板名 /スレッド名/ 600000"
+# export HUBOT_2CH_WATCHED_THREAD="#debug 掲示板名 /スレッド名/ 600000"
 export HUBOT_ADMINS="<your names>"
 
 # Finally run:
