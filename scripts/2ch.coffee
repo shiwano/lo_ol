@@ -1,6 +1,6 @@
 # Commands:
-#   hubot 2ch watch <bbsname> <query> <interval> - <query> にマッチした 2ch スレッドをウォッチする
-#   hubot 2ch stop - 現在のルームでの 2ch スレッドのウォッチを停止する
+#   hubot 2ch watch <bbsname> /<query>/ <interval> - <query> にマッチした 2ch スレッドを監視する
+#   hubot 2ch stop - 現在のルームでの 2ch スレッドの監視を停止する
 
 {ThreadWatcher, BbsMenu} = require '2ch'
 ent = require 'ent'
@@ -13,7 +13,7 @@ module.exports = (robot) ->
     name = message.name.replace /<[^<>]+>/g, ''
     body = message.body.replace /<[^<>]+>/g, ''
     body = ent.decode(body).replace /([^h]|^)ttp:\/\//, '$1http://'
-    "[#{message.number}]#{name}(#{message.tripId}): #{body}"
+    "#{message.number} #{name} (#{message.tripId}): #{body}"
 
   stopWatching = (room) ->
     watchers[room].destroy()
@@ -32,7 +32,7 @@ module.exports = (robot) ->
     watcher.on 'update', (messages) ->
       return canMessage = true unless canMessage
       messages.forEach (message) ->
-        robot.messageRoom room, toMessageString(message)[0...100]
+        robot.messageRoom room, toMessageString(message)
     watcher.on 'error', (error) ->
       robot.messageRoom room, error.toString()
       stopWatching room
@@ -46,7 +46,7 @@ module.exports = (robot) ->
     watcher.start()
     watchers[room] = watcher
 
-  robot.respond /2ch\s+watch\s+(.*)\s+(.*)\s+([0-9]+)\s*$/i, (msg) ->
+  robot.respond /2ch\s+watch\s+(.*)\s+\/(.*)\/\s+([0-9]+)\s*$/i, (msg) ->
     return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
     bbsName = msg.match[1]
     query = new RegExp(msg.match[2])
