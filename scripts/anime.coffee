@@ -4,18 +4,21 @@
 
 _ = require 'lodash'
 async = require 'async'
+{CronJob} = require 'cron'
 
 class Retriever
   constructor: (@robot, @room, @query, @interval) ->
     @cacheUrls = []
+    @retrieveCount = 0
     @_running = false
 
   isRunning: ->
     @_running
 
   start: ->
+    return if @isRunning()
     @_running = true
-    @retrieveAnimations 0, @showAnimations
+    @retrieveAnimations @showAnimations
 
   stop: ->
     @_running = false
@@ -23,11 +26,11 @@ class Retriever
   message: (message) ->
     @robot.messageRoom @room, message
 
-  retrieveAnimations: (start, callback) ->
-    if start >= 64
-      return callback _.shuffle(@cacheUrls), start
+  retrieveAnimations: (callback) ->
+    if @retrieveCount >= 8
+      return callback _.shuffle(@cacheUrls)
 
-    q = v: '1.0', rsz: '8', q: @query, safe: 'active', start: start.toString(), imgtype: 'animated'
+    q = v: '1.0', rsz: '8', q: @query, safe: 'active', start: (@retrieveCount * 8).toString(), imgtype: 'animated'
     @robot.http('http://ajax.googleapis.com/ajax/services/search/images')
       .query(q)
       .get() (err, res, body) =>
@@ -38,18 +41,18 @@ class Retriever
         return @message '画像が見つかりませんでした' if _.isEmpty(data.results) and _.isEmpty(@cacheUrls)
 
         urls = _.pluck(data.results, 'unescapedUrl')
-        nextStart = Number(start) + 8
+        @retrieveCount += 1
         @cacheUrls = _.union @cacheUrls, urls
-        callback urls, nextStart
+        callback urls
 
-  showAnimations: (urls, nextStart) =>
+  showAnimations: (urls) =>
     async.forEachSeries urls, (url, done) =>
       return done() if not @isRunning() or url.length > 450
       @message "[#{@query}] #{url}#.png"
       setTimeout done, @interval
     , =>
       return unless @isRunning()
-      @retrieveAnimations nextStart, @showAnimations
+      @retrieveAnimations @showAnimations
 
 module.exports = (robot) ->
   retrievers = {}
@@ -66,4 +69,18 @@ module.exports = (robot) ->
   robot.respond /anime\s+stop\s*$/i, (msg) ->
     room = msg.message.room
     retrievers[room]?.stop()
+    delete retrievers[room]
     msg.send 'GIFアニメを淡々と貼り続けるのをやめます'
+
+  startAll = ->
+    for room, retriever of retrievers
+      robot.messageRoom room, 'おはようございます'
+      retriever.start()
+
+  stopAll = ->
+    for room, retriever of retrievers
+      robot.messageRoom room, '21時なので、休みます'
+      retriever.stop()
+
+  new CronJob('00 00 9 * * 1-5', startAll, null, true, 'Asia/Tokyo')
+  new CronJob('00 00 21 * * 1-5', stopAll, null, true, 'Asia/Tokyo')
