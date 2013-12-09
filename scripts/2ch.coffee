@@ -16,11 +16,11 @@ module.exports = (robot) ->
 
   stopWatching = (room) ->
     robot.messageRoom room, '2ch スレッドの監視をストップします'
-    watchers[room].stop()
+    watchers[room]?.stop()
     delete watchers[room]
 
   startWatching = (room, bbsName, query, interval=600000) ->
-    watchers[room].stop() unless watchers[room]?
+    watchers[room]?.stop()
     watcher = new ThreadWatcher(bbsName, query, interval)
     loaded = false
 
@@ -33,7 +33,7 @@ module.exports = (robot) ->
 
     watcher.on 'error', (error) ->
       robot.messageRoom room, "エラーが発生しました(#{error.toString()})"
-      watchers[room].stop()
+      watcher.stop()
 
     watcher.on 'reload', (title) ->
       robot.messageRoom room, "「#{title}」スレッドを再読込します"
@@ -61,8 +61,8 @@ module.exports = (robot) ->
 
   robot.respond /2ch\s+watch\s*$/i, (msg) ->
     return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
-    return unless process.env.HUBOT_2CH_WATCHED_THREAD
-    for threadString in process.env.HUBOT_2CH_WATCHED_THREADS.split('\n')
+    return unless process.env.HUBOT_2CH_WATCHED_THREADS
+    for threadString in process.env.HUBOT_2CH_WATCHED_THREADS.split('\\n')
       match = /^([^\s]+)\s+(.*)\s+\/(.*)\/\s*$/.exec threadString
       room = match[1]
       bbsName = match[2]
