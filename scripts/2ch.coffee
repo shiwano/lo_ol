@@ -1,5 +1,5 @@
 # Commands:
-#   hubot 2ch watch <bbsname> /<query>/ <interval> - <query> にマッチした 2ch スレッドを監視する
+#   hubot 2ch watch <bbsname> /<query>/ - <query> にマッチした 2ch スレッドを監視する
 #   hubot 2ch stop - 現在のルームでの 2ch スレッドの監視を停止する
 
 {ThreadWatcher, BbsMenu} = require '2ch'
@@ -19,12 +19,10 @@ module.exports = (robot) ->
     watchers[room].stop()
     delete watchers[room]
 
-  startWatching = (room, bbsName, query, interval) ->
-    if watchers[room]
-      watchers[room].stop()
-
-    loaded = false
+  startWatching = (room, bbsName, query, interval=600000) ->
+    watchers[room].stop() unless watchers[room]?
     watcher = new ThreadWatcher(bbsName, query, interval)
+    loaded = false
 
     watcher.on 'update', (messages) ->
       return loaded = true unless loaded
@@ -34,8 +32,8 @@ module.exports = (robot) ->
           robot.messageRoom room, string[150 * i...150 * (i + 1)]
 
     watcher.on 'error', (error) ->
-      robot.messageRoom room, error.toString()
-      stopWatching room
+      robot.messageRoom room, "エラーが発生しました(#{error.toString()})"
+      watchers[room].stop()
 
     watcher.on 'reload', (title) ->
       robot.messageRoom room, "「#{title}」スレッドを再読込します"
@@ -51,23 +49,22 @@ module.exports = (robot) ->
     watcher.start()
     watchers[room] = watcher
 
-  robot.respond /2ch\s+watch\s+(.*)\s+\/(.*)\/\s+([0-9]+)\s*$/i, (msg) ->
-    return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
-    bbsName = msg.match[1]
-    query = new RegExp(msg.match[2])
-    interval = Number(msg.match[3] or 180000)
-    startWatching msg.message.room, bbsName, query, interval
-
   robot.respond /2ch\s+stop\s*$/i, (msg) ->
     return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
     stopWatching msg.message.room
 
+  robot.respond /2ch\s+watch\s+(.*)\s+\/(.*)\/\s*$/i, (msg) ->
+    return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
+    bbsName = msg.match[1]
+    query = new RegExp(msg.match[2])
+    startWatching msg.message.room, bbsName, query
+
   robot.respond /2ch\s+watch\s*$/i, (msg) ->
     return unless msg.message.user.name in process.env.HUBOT_ADMINS.split(',')
     return unless process.env.HUBOT_2CH_WATCHED_THREAD
-    match = /^([^\s]+)\s+(.*)\s+\/(.*)\/\s+([0-9]+)\s*$/.exec process.env.HUBOT_2CH_WATCHED_THREAD
-    room = match[1]
-    bbsName = match[2]
-    query = new RegExp(match[3])
-    interval = Number(match[4] or 180000)
-    startWatching room, bbsName, query, interval
+    for threadString in process.env.HUBOT_2CH_WATCHED_THREADS.split('\n')
+      match = /^([^\s]+)\s+(.*)\s+\/(.*)\/\s*$/.exec threadString
+      room = match[1]
+      bbsName = match[2]
+      query = new RegExp(match[3])
+      startWatching room, bbsName, query
