@@ -20,7 +20,6 @@
     "url": "https://github.com/github/hubot.git"
   },
   "dependencies": {
-    "hubot": "git://github.com/shiwano/hubot.git#fix-respond-method",
     "hubot-scripts": ">= 2.4.2",
     "hubot-irc": "~0.1.12",
     "lodash": "~1.2.0",
@@ -30,7 +29,8 @@
     "sparkline": "~0.1.1",
     "grunt": "~0.4.1",
     "2ch": "~0.1.1",
-    "ent": "0.0.5"
+    "ent": "0.0.5",
+    "hubot": "~2.6.4"
   },
   "engines": {
     "node": ">= 0.8.x",
