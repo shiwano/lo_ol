@@ -10,7 +10,8 @@ module.exports = (robot) ->
       msg.send url
 
   robot.respond /animate( me)? (.*)/i, (msg) ->
-    imageMe msg, msg.match[2], true, (url) ->
+    query = msg.match[2] + ' -site:yahoo-mbga.jp'
+    imageMe msg, query, true, (url) ->
       msg.send url
 
   robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
@@ -27,7 +28,6 @@ module.exports = (robot) ->
 imageMe = (msg, query, animated, faces, cb) ->
   cb = animated if typeof animated == 'function'
   cb = faces if typeof faces == 'function'
-  query += ' -site:yahoo-mbga.jp'
   q = v: '1.0', rsz: '8', q: query, safe: 'active'
   q.imgtype = 'animated' if typeof animated is 'boolean' and animated is true
   q.imgtype = 'face' if typeof faces is 'boolean' and faces is true
