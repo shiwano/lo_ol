@@ -32,7 +32,10 @@
     "ent": "0.0.5",
     "hubot": "~2.6.4",
     "sandbox": "~0.8.3",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "htmlparser": "~1.7.7",
+    "jsdom": "~0.10.1",
+    "soupselect": "~0.2.0"
   },
   "engines": {
     "node": ">= 0.8.x",
