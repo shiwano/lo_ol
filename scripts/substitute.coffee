@@ -3,7 +3,7 @@
 
 module.exports = (robot) ->
   lastMessages = {}
-  regexStr = 's/(([^/]|\\/)*)/(([^/]|\\/)*)/([ig]*)'
+  regexStr = 's/(([^/]|\\/)*)/(([^/]|\\/)*)/?([ig]*)'
   regex = new RegExp(regexStr)
 
   robot.hear /.+/, (msg) ->
