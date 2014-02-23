@@ -8,43 +8,58 @@ moment = require 'moment'
 sparkline = require 'sparkline'
 _ = require 'lodash'
 
-class Recorder
-  constructor: ->
-    @_records = {}
-    @_rankingRecords = {}
-
-  getRecord: (userName) ->
-    @_records[userName]
-
-  getOrCreateRecord: (userName) ->
-    record = @getRecord userName
-    unless record?
-      record = (0 for i in [0...48])
-      @_records[userName] = record
-    record
-
-  getGeneralRecord: ->
-    generalRecord = (0 for i in [0...48])
-    for userName, record of @_records
-      for value, index in record
-        generalRecord[index] += value
-    generalRecord
-
-  getRanking: ->
-    pairs = _.pairs @_rankingRecords
-    _.sortBy(pairs, (pair) -> pair[1]).reverse()
-
-  increment: (userName, value=1) ->
-    unless @_rankingRecords[userName]?
-      @_rankingRecords[userName] = 0
-    @_rankingRecords[userName] += value
-
-    record = @getOrCreateRecord userName
-    now = moment()
-    part = if now.minute() < 30 then 0 else 1
-    record[now.hour() * 2 + part] += value
 
 module.exports = (robot) ->
+  class Recorder
+    constructor: ->
+      if robot.brain.data.report?
+        @data = robot.brain.data.report
+      else
+        @reset()
+
+    reset: ->
+      robot.brain.data.report =
+        records: {}
+        rankingRecords: {}
+      @data = robot.brain.data.report
+      @save()
+
+    save: ->
+      robot.brain.save()
+
+    getRecord: (userName) ->
+      @data.records[userName]
+
+    getOrCreateRecord: (userName) ->
+      record = @getRecord userName
+      unless record?
+        record = (0 for i in [0...48])
+        @data.records[userName] = record
+        @save()
+      record
+
+    getGeneralRecord: ->
+      generalRecord = (0 for i in [0...48])
+      for userName, record of @data.records
+        for value, index in record
+          generalRecord[index] += value
+      generalRecord
+
+    getRanking: ->
+      pairs = _.pairs @data.rankingRecords
+      _.sortBy(pairs, (pair) -> pair[1]).reverse()
+
+    increment: (userName, value=1) ->
+      unless @data.rankingRecords[userName]?
+        @data.rankingRecords[userName] = 0
+      @data.rankingRecords[userName] += value
+
+      record = @getOrCreateRecord userName
+      now = moment()
+      part = if now.minute() < 30 then 0 else 1
+      record[now.hour() * 2 + part] += value
+      @save()
+
   rec = new Recorder()
 
   postReport = (room, record, userName) ->
@@ -86,4 +101,4 @@ module.exports = (robot) ->
     postGeneralReport msg
 
   new CronJob('00 00 19 * * 1-5', postGeneralReport, null, true, 'Asia/Tokyo')
-  new CronJob('00 00 00 * * 1-5', (-> rec = new Recorder()), null, true, 'Asia/Tokyo')
+  new CronJob('00 00 00 * * 1-5', (-> rec.reset()), null, true, 'Asia/Tokyo')
