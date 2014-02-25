@@ -35,7 +35,11 @@
     "async": "~0.2.9",
     "htmlparser": "~1.7.7",
     "jsdom": "~0.10.1",
-    "soupselect": "~0.2.0"
+    "soupselect": "~0.2.0",
+    "superagent": "~0.16.0",
+    "iconv": "~2.0.7",
+    "encoding": "~0.1.7",
+    "jschardet": "~1.1.0"
   },
   "engines": {
     "node": ">= 0.8.x",
