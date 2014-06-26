@@ -8,7 +8,7 @@ _ = require 'lodash'
 module.exports = (robot) ->
   faces = do ->
     mouths = ['o', 'x', 'q', 'w', '_', 'A', 'v', 'r', 'm', 'c', 'L']
-    eyes = ['^', 'O', 'T', '-', '`', '^-']
+    eyes = ['^', 'O', 'T', '-', '`', '^-', '進捗']
     faces = []
     for eye in eyes
       for mouth in mouths
