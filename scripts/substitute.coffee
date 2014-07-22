@@ -3,7 +3,7 @@
 
 module.exports = (robot) ->
   lastMessages = {}
-  regexStr = 's/(([^/]|\\/)*)/(([^/]|\\/)*)/?([ig]*)'
+  regexStr = 's/(([^/]|\\/)*)/(([^/]|\\/)*)(/([ig]*)|)'
   regex = new RegExp(regexStr)
 
   robot.hear /.+/, (msg) ->
@@ -15,7 +15,7 @@ module.exports = (robot) ->
     unless lastMessage
       return msg.send "#{msg.message.user.name} さんの前のメッセージを覚えてないので置換できません"
 
-    result = lastMessage.replace (new RegExp msg.match[1], msg.match[5]), msg.match[3]
+    result = lastMessage.replace (new RegExp msg.match[1], msg.match[6]), msg.match[3]
     msg.send "#{msg.message.user.name}: #{result}"
 
   robot.respond (new RegExp "sub #{regexStr}$", 'i'), substituteText
