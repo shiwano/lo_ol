@@ -32,21 +32,35 @@ generateHTML = (name, dict, dictUpdatedAt, info = '') ->
         <div class="form-group">
           <label for="dict">会話に使う辞書</label>
           <textarea id="dict" class="form-control" name="dict" rows="10">#{dict}</textarea>
-          <p class="help-block">「元気？,元気ですよ」のようにカンマ区切りで入力してください</p>
+          <p class="help-block">
+            「こんにちは,こんにちは、{name}」のようにカンマ区切りで入力してください。<br />
+            {name} は、話しかけた人の名前に置換されます。
+          </p>
         </div>
         <input type="hidden" name="dictUpdatedAt" value="#{dictUpdatedAt}">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">更新</button>
       </form>
     </div>
   </body>
 </html>
   """
 
+class Listener
+  constructor: (@regex, @answer) ->
+
+  call: (msg) ->
+    if @regex.test msg.message.text
+      name = msg.message.user.name
+      msg.send @answer.replace '{name}', name
+
 module.exports = (robot) ->
-  robot.brain.data.munoh ?=
-    dictUpdatedAt: 0
-    dict: {}
-  robot.brain.save()
+  listeners = []
+
+  updateListeners = ->
+    listeners = []
+    for key, value of robot.brain.data.munoh.dict
+      regex = new RegExp(".*#{key}.*", 'im')
+      listeners.push new Listener(regex, value)
 
   getHTMLContent = (infoText = null) ->
     dictStrings = ("#{key},#{value}" for key, value of robot.brain.data.munoh.dict)
@@ -63,6 +77,9 @@ module.exports = (robot) ->
       res.end '他の人が編集してしまったので更新できませんでした。\nリロードしてやり直してください。'
       return
 
+    robot.brain.data.munoh ?=
+      dictupdatedat: 0
+      dict: {}
     robot.brain.data.munoh.dict = {}
     for dictString in req.body.dict.replace('\r', '').split('\n')
       [key, value] = dictString.split(',')
@@ -70,10 +87,12 @@ module.exports = (robot) ->
         robot.brain.data.munoh.dict[key] = value
     robot.brain.data.munoh.dictUpdatedAt = new Date().getTime()
     robot.brain.save()
+    updateListeners()
     res.setHeader 'content-type', 'text/html'
     res.end getHTMLContent '辞書を更新しました'
 
+  robot.brain.on 'loaded', -> updateListeners()
+
   robot.hear /.+/, (msg) ->
-    answer = robot.brain.data.munoh.dict[msg.message.text]
-    return unless answer?
-    msg.send answer
+    for listener in listeners
+      listener.call msg
