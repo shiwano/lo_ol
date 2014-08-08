@@ -93,6 +93,12 @@ module.exports = (robot) ->
 
   robot.brain.on 'loaded', -> updateListeners()
 
+  robot.respond /munoh$/i, (msg) ->
+    msg.send process.env.HUBOT_MUNOH_URL
+
+  robot.respond /無脳$/i, (msg) ->
+    msg.send process.env.HUBOT_MUNOH_URL
+
   robot.hear /.+/, (msg) ->
     for listener in listeners
       listener.call msg

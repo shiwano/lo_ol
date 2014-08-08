@@ -24,6 +24,7 @@ export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
 export HUBOT_REPORT_ROOM="#report"
 export HUBOT_2CH_WATCHED_THREADS="#debug 掲示板名 /スレッド名/"
 export HUBOT_ADMINS="<your names>"
+export HUBOT_MUNOH_URL="http://example.com/munoh"
 
 # Finally run:
 exec node_modules/.bin/hubot -a irc
