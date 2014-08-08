@@ -57,6 +57,9 @@ module.exports = (robot) ->
   listeners = []
 
   updateListeners = ->
+    robot.brain.data.munoh ?=
+      dictUpdatedAt: 0
+      dict: {}
     listeners = []
     for key, value of robot.brain.data.munoh.dict
       regex = new RegExp(".*#{key}.*", 'im')
@@ -77,9 +80,6 @@ module.exports = (robot) ->
       res.end '他の人が編集してしまったので更新できませんでした。\nリロードしてやり直してください。'
       return
 
-    robot.brain.data.munoh ?=
-      dictupdatedat: 0
-      dict: {}
     robot.brain.data.munoh.dict = {}
     for dictString in req.body.dict.replace('\r', '').split('\n')
       [key, value] = dictString.split(',')
