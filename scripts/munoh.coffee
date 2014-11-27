@@ -8,6 +8,7 @@ generateHTML = (name, dict, dictUpdatedAt, info = '') ->
   """
 <html>
   <head>
+    <meta charset="utf-8">
     <title>人工無脳 #{name}</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
