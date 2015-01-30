@@ -63,7 +63,10 @@ module.exports = (robot) ->
             return
 
           processResult = (elem) ->
-            unEntity(elem.children[0].data.replace(/(\r\n|\n|\r)/gm,"").trim())
+            if elem?.children?
+              unEntity(elem.children[0].data.replace(/(\r\n|\n|\r)/gm,"").trim())
+            else
+              '<title> tag not found.'
 
           if results[0]
             msg.send 'Title: ' + processResult(results[0])
